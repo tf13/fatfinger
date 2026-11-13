@@ -1,6 +1,6 @@
 # Plan: FatFinger Cipher — keyboard-shift cipher (browser tool)
 
-**Project location:** `~/Dropbox (Personal)/Coding-profl/fatfinger`. This plan is saved there as `plans/PLAN.md`.
+This plan is saved in the repo as `plans/PLAN.md`.
 
 **Decisions made:**
 - Name: **FatFinger Cipher**.
