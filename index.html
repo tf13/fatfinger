@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="A Caesar-style cipher that rewrites text as if your fingers were shifted on the keyboard." />
+    <title>FatFinger Cipher</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⌨️</text></svg>" />
+  </head>
+  <body>
+    <header class="masthead">
+      <h1>FatFinger Cipher</h1>
+      <p class="tagline">Caesar, but your hands slipped. Text is rewritten as if typed with your fingers shifted on the keyboard.</p>
+    </header>
+
+    <main>
+      <section class="panel io" aria-label="Text">
+        <div class="io-head">
+          <div class="seg" role="radiogroup" aria-label="Mode">
+            <button type="button" role="radio" data-mode="encrypt">Encrypt</button>
+            <button type="button" role="radio" data-mode="decrypt">Decrypt</button>
+          </div>
+          <span id="lossy-badge" class="badge warn" hidden>One-way mode: decrypt unavailable</span>
+        </div>
+
+        <label class="field-label" for="input" id="input-label">Plaintext</label>
+        <textarea id="input" dir="auto" rows="6" spellcheck="false" placeholder="Type or paste text…"></textarea>
+
+        <div class="io-mid">
+          <button type="button" id="swap" class="btn" title="Move the output into the input and flip the mode">⇅ Swap</button>
+        </div>
+
+        <label class="field-label" for="output" id="output-label">Ciphertext</label>
+        <textarea id="output" dir="auto" rows="6" readonly spellcheck="false"></textarea>
+        <div class="io-foot">
+          <div id="notes" class="notes" aria-live="polite"></div>
+          <button type="button" id="copy" class="btn primary">Copy</button>
+        </div>
+      </section>
+
+      <section class="panel settings" aria-label="Settings">
+        <h2>Settings</h2>
+
+        <div class="row2">
+          <fieldset>
+            <legend>Direction</legend>
+            <div class="seg" role="radiogroup" aria-label="Direction">
+              <button type="button" role="radio" data-dir="left">← Left</button>
+              <button type="button" role="radio" data-dir="right">Right →</button>
+            </div>
+          </fieldset>
+          <fieldset>
+            <legend><label for="keys">Keys</label></legend>
+            <div class="stepper">
+              <button type="button" class="btn" id="keys-dec" aria-label="Fewer keys">−</button>
+              <input id="keys" type="number" min="1" max="12" step="1" inputmode="numeric" />
+              <button type="button" class="btn" id="keys-inc" aria-label="More keys">+</button>
+            </div>
+          </fieldset>
+        </div>
+
+        <label class="field-label" for="layout">Keyboard layout</label>
+        <select id="layout"></select>
+        <p class="hint" id="layout-hint"></p>
+
+        <div class="row2">
+          <div>
+            <label class="field-label" for="form">Physical keyboard</label>
+            <select id="form">
+              <option value="auto">Auto</option>
+              <option value="ansi">ANSI (US-style)</option>
+              <option value="iso">ISO (extra key by left Shift)</option>
+              <option value="jis">JIS (Japanese)</option>
+            </select>
+          </div>
+          <div>
+            <label class="field-label" for="platform">Bottom row</label>
+            <select id="platform">
+              <option value="auto">Auto</option>
+              <option value="mac">Mac (fn ⌃ ⌥ ⌘)</option>
+              <option value="pc">PC (Ctrl Win Alt)</option>
+            </select>
+          </div>
+        </div>
+
+        <fieldset class="policy">
+          <legend>When your finger lands on a key that doesn't type anything (⇪ Caps Lock, ⌥ Option, ⇧ Shift…)</legend>
+          <label class="choice">
+            <input type="radio" name="policy" value="skip" />
+            <span><strong>Skip it &amp; wrap</strong> <span class="badge ok">reversible</span><br />
+              <small>Only character keys count, and each row loops around: one left of <kbd>a</kbd> is the row's last key.</small></span>
+          </label>
+          <label class="choice">
+            <input type="radio" name="policy" value="symbol" />
+            <span><strong>Write the key's symbol</strong> <span class="badge ok">reversible</span><br />
+              <small>Writes a token such as <code>⟦⇪⟧</code> or <code>⟦R⌥⟧</code>. Rows loop around.</small></span>
+          </label>
+          <label class="choice">
+            <input type="radio" name="policy" value="realistic" />
+            <span><strong>Realistic typing</strong> <span class="badge warn">one-way</span><br />
+              <small>Caps Lock toggles case, Backspace deletes, and modifiers or falling off the edge type nothing.</small></span>
+          </label>
+        </fieldset>
+
+        <label class="check"><input type="checkbox" id="tab-enter" /> Tab and Enter count as characters (<code>\t</code>, <code>\n</code>)</label>
+        <label class="check"><input type="checkbox" id="remember" /> Remember my text in this browser</label>
+      </section>
+
+      <section class="panel kbd-panel" aria-label="Keyboard map">
+        <h2>Keyboard map</h2>
+        <div id="kbd" class="kbd" role="img"></div>
+        <p id="kbd-caption" class="hint">Hover or tap a key to see where your finger lands.</p>
+      </section>
+
+      <details class="panel" id="all-shifts-panel">
+        <summary><h2>Try all shifts</h2></summary>
+        <p class="hint">Don't know the settings? This applies 1–3 keys in each direction to the input.</p>
+        <ol id="all-shifts" class="shifts"></ol>
+      </details>
+
+      <details class="panel" id="calibrate-panel">
+        <summary><h2>Teach FatFinger your keyboard</h2></summary>
+        <p class="hint">
+          If the detected layout isn't quite right, type here. Include Shift, and AltGr or ⌥ characters too.
+          Each key you press is recorded with the character it actually typed. Nothing leaves this browser.
+        </p>
+        <textarea id="calib" rows="3" spellcheck="false" placeholder="Type every key on your keyboard…"></textarea>
+        <div class="io-foot">
+          <span id="calib-count" class="hint"></span>
+          <span>
+            <button type="button" id="calib-clear" class="btn">Clear</button>
+            <button type="button" id="calib-use" class="btn primary">Use as “My keyboard”</button>
+          </span>
+        </div>
+      </details>
+    </main>
+
+    <footer>Everything runs in your browser. Settings are kept only in this browser's local storage.</footer>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
