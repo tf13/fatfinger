@@ -27,3 +27,10 @@ npm run build    # static site in dist/
 - **Storage:** settings live in `localStorage` (`fatfinger.v1`). Your text is stored only if you opt in.
 
 See `plans/PLAN.md` for the design and its open decisions.
+
+## Command line & agent skill
+```bash
+npm run -s cli -- encrypt "Hello, world!"     # → Jr;;p. ept;f@
+npm run -s cli -- --help
+```
+An agent skill describing how to use and change this project is in `.claude/skills/fatfinger/` (Claude Code) and `.agents/skills/fatfinger/` (other agents). Both are picked up automatically when you work in a clone of this repo.
