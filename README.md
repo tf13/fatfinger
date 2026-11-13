@@ -1,5 +1,7 @@
 # FatFinger Cipher
 
+**Try it:** https://tf13.github.io/fatfinger/
+
 A Caesar-style cipher for the browser. Text is rewritten as if typed with your fingers shifted N keys left or right on a physical keyboard.
 
 ```bash
@@ -7,6 +9,7 @@ npm install
 npm run dev      # http://localhost:5173
 npm test         # unit + round-trip tests
 npm run build    # static site in dist/
+# Pushes to main deploy to GitHub Pages (.github/workflows/pages.yml)
 ```
 
 ## How it works
